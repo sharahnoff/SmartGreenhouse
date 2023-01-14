@@ -31,6 +31,8 @@ CRGB leds[NUM_LEDS];                                       // называем �
 #define pump 17                                            // пин насоса GP17
 char ssid[] = "DiR-615";                                   // Логин Wi-Fi
 char pass[] = "C3c25b212D";                                // Пароль от Wi-Fi
+char mqttlog[] = "mqtt";                                   // Логин Mosquito Broker
+char mqttpass[] = "mqtt";                                  // Пароль Mosquito Broker
 
 WiFiClient client;
 HADevice device;
@@ -46,7 +48,7 @@ HASensorNumber UVBSensor("uvbSensor");
 HASensorNumber UVSensor("uvSensor");
 HASwitch fanSwitch("myFanSwitch");                                               // выключатель вентилятора
 HASwitch pumpSwitch("myPumpSwitch");                                             // выключатель водяной помпы
-HACover cover("myWindow", HACover::PositionFeature);                             // форточка
+HACover cover("myWindow");                             // форточка
 HALight light("prettyLight", HALight::BrightnessFeature | HALight::RGBFeature);  // освещение
 
 void onLightStateCommand(bool state, HALight* sender) {  // действия при нажатии кнопки включения освещения в НА
@@ -91,7 +93,6 @@ void onPumpSwitchCommand(bool state, HASwitch* sender) {  // действие п
 }
 
 void onCoverCommand(HACover::CoverCommand cmd, HACover* sender) {  // действия при работе с форточкой
-  Serial.println("current pos :" + String(pos));
   if (cmd == HACover::CommandOpen) {
     sender->setState(HACover::StateOpening);
     mooving = 'o';
@@ -196,7 +197,7 @@ void setup() {
   pumpSwitch.setName("Water pump");
   pumpSwitch.onCommand(onPumpSwitchCommand);
 
-  mqtt.begin("192.168.0.2", "mqtt", "mqtt");  // подключение к сервверу home assistant
+  mqtt.begin("192.168.0.2", mqttlog, mqttpass);  // подключение к сервверу home assistant
 }
 
 void checkBrightness() {
